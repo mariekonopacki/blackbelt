@@ -510,7 +510,7 @@ body {
     justify-content: center;
     z-index: 2;
     /*background-image: url('/images/woman speaking.jpeg');*/
-    background:linear-gradient(0deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/images/woman speaking.jpeg');
+    background:linear-gradient(0deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('./images/woman speaking.jpeg');
     background-size: cover;
 
 }
