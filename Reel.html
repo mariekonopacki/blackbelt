@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Reel</title>
+    <style>
+        body {
+            margin: 0;
+            background-image:
+                    linear-gradient(to right top, rgba(22,22,25,.1), rgba(21,21,24,.3), rgba(8,8,9,.5), rgba(7,7,9,.5), rgba(7,7,9,.5), rgba(7,8,9,.5), rgba(8,9,10,.5), rgba(9,10,11,.5), rgba(11,13,14,.5), rgba(13,15,16,.5), rgba(16,18,18,.5), rgba(13,16,30,.5)),
+                    linear-gradient(to bottom, rgb(15,15,16), rgb(17,18,19) 32%, rgb(10,10,13) 38%, rgb(10,10,11), rgb(7,7,8));
+        }
+        canvas { width: 100%; height: 100% }
+    </style>
+</head>
+<body>
+
+
+<video id="video" loop muted crossOrigin="anonymous" playsinline style="display:none">
+    <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" type='video/mp4;'>
+</video>
+
+<script type="module">
+
+    import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
+
+    import {OrbitControls} from 	'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js'
+    import {Reflector} from 			'https://unpkg.com/three@0.126.1/examples/jsm/objects/Reflector.js'
+    import {BloomPass} from 			'https://unpkg.com/three@0.126.1/examples/jsm/postprocessing/BloomPass.js'
+    import {EffectComposer} from 	'https://unpkg.com/three@0.126.1/examples/jsm/postprocessing/EffectComposer.js';
+    import {RenderPass} from 			'https://unpkg.com/three@0.126.1/examples/jsm/postprocessing/RenderPass.js';
+    import {UnrealBloomPass} from 'https://unpkg.com/three@0.126.1/examples/jsm/postprocessing/UnrealBloomPass.js'
+
+
+    // Initial setup
+    const scene = new THREE.Scene();
+    scene.background = null;
+    const camera = new THREE.PerspectiveCamera( 38, (window.innerWidth) / window.innerHeight, 0.1, 1000 );
+    camera.layers.enable(1);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const controls = new OrbitControls( camera, renderer.domElement );
+    // controls.enabled = false;
+
+    // Composer
+    const renderScene = new RenderPass( scene, camera );
+
+    const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+    bloomPass.threshold = 0.1;
+    bloomPass.strength = 4;
+    bloomPass.radius = 1;
+    bloomPass.renderToScreen = true
+
+    var width = window.innerWidth || 1;
+    var height = window.innerHeight || 1;
+    var filterparameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, stencilBuffer: false };
+
+    var renderTarget = new THREE.WebGLRenderTarget( width, height, filterparameters );
+
+    const composer = new EffectComposer( renderer, renderTarget );
+    composer.setSize( window.innerWidth, window.innerHeight )
+    composer.addPass( renderScene );
+    composer.addPass( bloomPass );
+
+    // Camera position
+    camera.position.set( 0, 20, 70 );
+    controls.update();
+
+    // Set background color and size
+    renderer.setClearColor( 0x00ffff, 0 );
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( renderer.domElement );
+
+    // Set up video
+    let video = document.getElementById( 'video' );
+    video.play();
+
+    // Attach video to texture
+    const texture = new THREE.VideoTexture( video );
+    const parameters = { color: 0xffffff, map: texture}
+
+    const reflectionTexture = new THREE.VideoTexture( video );
+    reflectionTexture.offset.set(0, -.5);
+    const reflectionParameters = { color: 0xffffff, map: reflectionTexture, opacity: .2, alpha: true}
+
+    // Inner light
+    const centerLight = new THREE.PointLight( 'rgb(190,50,200)', 1, 20 );
+    centerLight.position.set( 0, 4, 0 );
+    scene.add( centerLight );
+
+    let geometry, material;
+
+    let cHeight = 12;
+    let cRadius = 15;
+    let cSlice = .5*3.1419;
+    let cSegments = 40;
+
+    let ringColor = 'rgb(10,10,12)'
+    let ringHeight = .2
+
+    // Bottom glow
+    geometry = new THREE.CylinderGeometry( cRadius, cRadius, ringHeight, cSegments, 4, true, 0, 2*3.1419 );
+    material = new THREE.MeshBasicMaterial({color: ringColor, wireframe: false})
+    var glowRing = new THREE.Mesh(geometry, material)
+    glowRing.translateY(-.15);
+    scene.add(glowRing);
+
+    // Top glow
+    geometry = new THREE.CylinderGeometry( cRadius, cRadius, ringHeight, cSegments, 4, true, 0, 2*3.1419 );
+    material = new THREE.MeshBasicMaterial({color: ringColor, wireframe: false})
+    material.side = THREE.DoubleSide
+    var glowRing2 = new THREE.Mesh(geometry, material)
+    glowRing2.translateY(cHeight + .1);
+    scene.add(glowRing2);
+
+    // Create part of cylinder, attach video
+    geometry = new THREE.CylinderGeometry( cRadius, cRadius, cHeight, cSegments, 4, true, 0, cSlice );
+    material = new THREE.MeshBasicMaterial( parameters );
+    material.side = THREE.DoubleSide
+    const cylinder1 = new THREE.Mesh( geometry, material );
+    cylinder1.translateY(cHeight / 2);
+    cylinder1.layers.enable(1);
+    scene.add( cylinder1 );
+
+    // Create part of cylinder, attach video
+    geometry = new THREE.CylinderGeometry( cRadius, cRadius, cHeight, cSegments, 4, true, 1.5708, cSlice );
+    material = new THREE.MeshBasicMaterial( parameters );
+    material.side = THREE.DoubleSide
+    const cylinder2 = new THREE.Mesh( geometry, material );
+    cylinder2.translateY(cHeight / 2);
+    cylinder2.layers.enable(1);
+    scene.add( cylinder2 );
+
+    // Create part of cylinder, attach video
+    geometry = new THREE.CylinderGeometry( cRadius, cRadius, cHeight, cSegments, 4, true, 3.14159, cSlice );
+    material = new THREE.MeshBasicMaterial( parameters );
+    material.side = THREE.DoubleSide
+    const cylinder3 = new THREE.Mesh( geometry, material );
+    cylinder3.translateY(cHeight / 2);
+    cylinder3.layers.enable(1);
+    scene.add( cylinder3 );
+
+    // Create part of cylinder, attach video
+    geometry = new THREE.CylinderGeometry( cRadius, cRadius, cHeight, cSegments, 4, true, 4.71239, cSlice );
+    material = new THREE.MeshBasicMaterial( parameters );
+    material.side = THREE.DoubleSide
+    const cylinder4 = new THREE.Mesh( geometry, material );
+    cylinder4.translateY(cHeight / 2);
+    cylinder4.layers.enable(1);
+    scene.add( cylinder4 );
+
+    // Reflection
+    geometry = new THREE.TorusGeometry( cRadius * 1.33, 5, 2, cSegments, cSlice );
+    geometry.rotateX( - Math.PI / 2 );
+    material = new THREE.MeshBasicMaterial( reflectionParameters );
+    const torus1 = new THREE.Mesh( geometry, material );
+    torus1.side = THREE.DoubleSide;
+    torus1.scale.y = -1
+    // torus1.layers.enable(1);
+    scene.add( torus1 );
+
+    geometry = new THREE.TorusGeometry( cRadius * 1.33, 5, 2, cSegments, cSlice );
+    geometry.rotateX( - Math.PI / 2 );
+    geometry.rotateY( - Math.PI / 2)
+    material = new THREE.MeshBasicMaterial( reflectionParameters );
+    const torus2 = new THREE.Mesh( geometry, material );
+    torus2.side = THREE.DoubleSide;
+    torus2.scale.y = -1;
+    // torus2.layers.enable(1);
+    scene.add( torus2 );
+
+    geometry = new THREE.TorusGeometry( cRadius * 1.33, 5, 2, cSegments, cSlice );
+    geometry.rotateX( - Math.PI / 2 );
+    geometry.rotateY( - Math.PI )
+    material = new THREE.MeshBasicMaterial( reflectionParameters );
+    const torus3 = new THREE.Mesh( geometry, material );
+    torus3.side = THREE.DoubleSide;
+    torus3.scale.y = -1;
+    // torus3.layers.enable(1);
+    scene.add( torus3 );
+
+    geometry = new THREE.TorusGeometry( cRadius * 1.33, 5, 2, cSegments, cSlice );
+    geometry.rotateX( - Math.PI / 2 );
+    geometry.rotateY( Math.PI / 2);
+    material = new THREE.MeshBasicMaterial( reflectionParameters );
+    const torus4 = new THREE.Mesh( geometry, material );
+    torus4.side = THREE.DoubleSide;
+    torus4.scale.y = -1;
+    // torus4.layers.enable(1);
+    scene.add( torus4 );
+
+
+    // Set up light
+    const light = new THREE.DirectionalLight( 'rgb(230,230,255)', 2);
+    light.position.set(2, 6, 4);
+    scene.add( light );
+
+
+    // Animate function to rotate cylinder
+    const animate = function () {
+        requestAnimationFrame( animate );
+
+        cylinder1.rotation.y += 0.005;
+        torus1.rotation.y += 0.005;
+        cylinder2.rotation.y += 0.005;
+        torus2.rotation.y += 0.005;
+        cylinder3.rotation.y += 0.005;
+        torus3.rotation.y += 0.005;
+        cylinder4.rotation.y += 0.005;
+        torus4.rotation.y += 0.005;
+
+        renderer.autoClear = false;
+        renderer.clear();
+
+        camera.layers.set(1);
+        composer.render();
+
+        renderer.clearDepth();
+        camera.layers.set(0);
+        renderer.render(scene, camera);
+
+    };
+
+    animate();
+
+
+
+
+</script>
+</body>
+</html>
