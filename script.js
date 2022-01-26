@@ -359,58 +359,58 @@ function capabilityStep(step) {
 
     }
 }
-
-$('#videoLogo').hover(
-    function() {
-
-        reduceRadius3 = document.getElementById('reduceRadius-3');
-        reduceRadius3.beginElementAt(.15);
-
-        expandRadius3 = document.getElementById('expandRadius-3');
-        expandRadius3.beginElementAt(.3);
-
-        moveLeg1 = document.getElementById('moveLeg-1');
-        moveLeg1.beginElement();
-
-        moveLeg2 = document.getElementById('moveLeg-2');
-        moveLeg2.beginElement();
-
-        moveCircle1 = document.getElementById('moveCircle-1');
-        moveCircle1.beginElement();
-
-        moveCircle2 = document.getElementById('moveCircle-2');
-        moveCircle2.beginElement();
-
-        moveCircle3 = document.getElementById('moveCircle-3');
-        moveCircle3.beginElement();
-
-
-    }, function() {
-        // returnRadius1 = document.getElementById('returnRadius-1');
-        // returnRadius1.beginElementAt(.3);
-        returnLeg1 = document.getElementById('returnLeg-1');
-        returnLeg1.beginElementAt(.3);
-
-        returnLeg2 = document.getElementById('returnLeg-2');
-        returnLeg2.beginElementAt(.3);
-
-        returnCircle1 = document.getElementById('returnCircle-1');
-        returnCircle1.beginElementAt(.3);
-
-        returnCircle2 = document.getElementById('returnCircle-2');
-        returnCircle2.beginElementAt(.3);
-
-        returnCircle2 = document.getElementById('returnCircle-3');
-        returnCircle2.beginElementAt(.3);
-
-
-        returnRadius3 = document.getElementById('returnRadius-3');
-        returnRadius3.beginElement();
-
-        returnRadius32 = document.getElementById('returnRadius-3-2');
-        returnRadius32.beginElementAt(.5);
-    }
-)
+//
+// $('#videoLogo').hover(
+//     function() {
+//
+//         reduceRadius3 = document.getElementById('reduceRadius-3');
+//         reduceRadius3.beginElementAt(.15);
+//
+//         expandRadius3 = document.getElementById('expandRadius-3');
+//         expandRadius3.beginElementAt(.3);
+//
+//         moveLeg1 = document.getElementById('moveLeg-1');
+//         moveLeg1.beginElement();
+//
+//         moveLeg2 = document.getElementById('moveLeg-2');
+//         moveLeg2.beginElement();
+//
+//         moveCircle1 = document.getElementById('moveCircle-1');
+//         moveCircle1.beginElement();
+//
+//         moveCircle2 = document.getElementById('moveCircle-2');
+//         moveCircle2.beginElement();
+//
+//         moveCircle3 = document.getElementById('moveCircle-3');
+//         moveCircle3.beginElement();
+//
+//
+//     }, function() {
+//         // returnRadius1 = document.getElementById('returnRadius-1');
+//         // returnRadius1.beginElementAt(.3);
+//         returnLeg1 = document.getElementById('returnLeg-1');
+//         returnLeg1.beginElementAt(.3);
+//
+//         returnLeg2 = document.getElementById('returnLeg-2');
+//         returnLeg2.beginElementAt(.3);
+//
+//         returnCircle1 = document.getElementById('returnCircle-1');
+//         returnCircle1.beginElementAt(.3);
+//
+//         returnCircle2 = document.getElementById('returnCircle-2');
+//         returnCircle2.beginElementAt(.3);
+//
+//         returnCircle2 = document.getElementById('returnCircle-3');
+//         returnCircle2.beginElementAt(.3);
+//
+//
+//         returnRadius3 = document.getElementById('returnRadius-3');
+//         returnRadius3.beginElement();
+//
+//         returnRadius32 = document.getElementById('returnRadius-3-2');
+//         returnRadius32.beginElementAt(.5);
+//     }
+// )
 
 
 

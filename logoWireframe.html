@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Logo wireframe</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+        }
+        canvas { width: 100%; height: 100% }
+    </style>
+</head>
+<body>
+<div class="page p1" style="background-color: white;">
+    <div class="video-logo-container" ></div>
+</div>
+
+<div class="page p2" id="p2">
+    <div class="white-logo-container" id="logoCanvasContainer">
+        <div id="logoCanvas"></div>
+    </div>
+</div>
+
+<div class="page" style="background-color: white;"></div>
+
+<script type="module">
+
+    import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
+
+    import {OrbitControls} from 	'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js'
+    import {Reflector} from 			'https://unpkg.com/three@0.126.1/examples/jsm/objects/Reflector.js'
+    import {BloomPass} from 			'https://unpkg.com/three@0.126.1/examples/jsm/postprocessing/BloomPass.js'
+    import {EffectComposer} from 	'https://unpkg.com/three@0.126.1/examples/jsm/postprocessing/EffectComposer.js';
+    import {RenderPass} from 			'https://unpkg.com/three@0.126.1/examples/jsm/postprocessing/RenderPass.js';
+    import {UnrealBloomPass} from 'https://unpkg.com/three@0.126.1/examples/jsm/postprocessing/UnrealBloomPass.js'
+    import {RoundedBoxGeometry} from 'https://unpkg.com/three@0.126.1/examples/jsm/geometries/RoundedBoxGeometry.js'
+
+    let container = document.getElementById( 'logoCanvas' );
+    document.getElementById('logoCanvasContainer').appendChild( container );
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 1000  );
+
+    const renderer = new THREE.WebGLRenderer({ 	alpha: true, antialias: true});
+    renderer.setClearColor( 0xffffff, 0 );
+    renderer.setPixelRatio(window.devicePixelRatio); // For HiDPI devices to prevent bluring output canvas
+
+    const controls = new OrbitControls( camera, renderer.domElement );
+    controls.enabled = false;
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    container.appendChild( renderer.domElement );
+
+
+    // Circles
+    let R = 14;
+    let r = 6.61;
+    let h = 5;
+
+    let geometry = cylinderLathe(R, r, h);
+    let material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, side: THREE.DoubleSide });
+    let o1 = new THREE.Mesh(geometry, material);
+    let o2 = new THREE.Mesh(geometry, material);
+    o2.translateX(44);
+    let o3 = new THREE.Mesh(geometry, material);
+    o3.translateZ(-28);
+
+    scene.add(o1);
+    scene.add(o2);
+    scene.add(o3);
+
+    // Lines
+    const llength = 7.7, lwidth = 2;
+
+    const shape = new THREE.Shape();
+    shape.moveTo( 0,0 );
+    shape.lineTo( 0, lwidth );
+    shape.lineTo( llength, lwidth );
+    shape.lineTo( llength, 0 );
+    shape.lineTo( 0, 0 );
+
+    const extrudeSettings = {
+        steps: 2,
+        depth: 52,
+        bevelEnabled: true,
+        bevelThickness: 2,
+        bevelSize: 1,
+        bevelOffset: 0,
+        bevelSegments: 1
+    };
+
+    geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+    material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, side: THREE.DoubleSide } );
+    let l1 = new THREE.Mesh( geometry, material );
+    l1.translateZ(-40);
+    l1.translateX(-26);
+    let l2 = new THREE.Mesh( geometry, material );
+    l2.translateZ(-40);
+    l2.translateX(18);
+    scene.add( l1 );
+    scene.add( l2 );
+
+    camera.position.y = 50;
+    camera.zoom = 5;
+
+
+    // 27% from the right
+    let xOffset = - width * .23;
+    let yOffset = 0;
+
+    camera.setViewOffset(width, height, xOffset, yOffset, width, height)
+    camera.updateProjectionMatrix();
+    controls.update();
+
+
+    function animate() {
+        requestAnimationFrame( animate )
+
+        renderer.render( scene, camera );
+    }
+    animate();
+
+    function zoomInCamera() {
+
+    }
+
+
+    function cylinderLathe(R, r, h){
+
+        let halfH = h * 0.5;
+
+        let points = [
+            new THREE.Vector2(r, -halfH),
+            new THREE.Vector2(R, -halfH),
+            new THREE.Vector2(R, halfH),
+            new THREE.Vector2(r, halfH),
+            new THREE.Vector2(r, -halfH)
+        ];
+
+        let g = new THREE.LatheBufferGeometry(points, 16);
+
+        return g;
+
+    }
+
+
+</script>
+
+
+</body>
+</html>
