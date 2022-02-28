@@ -4,6 +4,21 @@ document.onmousemove = function(e) {
 
 }
 
+$("#emailButton").mouseover( function() {
+    $('#emailBackground').css('width', '100%');
+    // $('#emailBackground').css('box-shadow', '0px 0px 100px 30px rgba(240,78,55, .15)');
+    // $('#emailButton').css('transform', 'scale(1.2)');
+    // $('.contact-body').css('background-color', 'rgba(0,0,0,.5)');
+});
+
+
+$("#emailButton").mouseout( function() {
+    $('#emailBackground').css('width', '0%');
+    $('#emailBackground').css('box-shadow', '0px 0px 0px 0px rgba(240,78,55, 0)');
+    $('#emailButton').css('transform', 'scale(1)');
+    $('.contact-body').css('background-color', 'rgba(0,0,0,0)');
+});
+
 function openMenu() {
 
     // Rotate BB logo, reveal menu
@@ -100,6 +115,9 @@ function skipTo(sectionNo, pageNo) {
 
 $(document).on('scroll', function() {
 
+    // If screen is mobile
+    var mql = window.matchMedia("screen and (max-width: 768px)")
+
     // User scrolls back up to 1st page
     if ($(this).scrollTop() <= ($('#p2').position().top) - 400) {
         $('#sidebar').css('left', '-5vw')
@@ -107,6 +125,16 @@ $(document).on('scroll', function() {
         $('#bb-logo').css('left', '-3.75vw')
         $('#sidebar').css('background-color', 'var(--red)');
         $('#sidebar').css('border-right', 'none');
+
+        if (mql.matches) { // if media query is mobile sized
+            $('#sidebar').css('left', '-100vw')
+            $('#sidebar-text').css('top', '-20vw')
+            $('#bb-logo').css('left', '-20vw')
+            $('#sidebar-text').css('left', '30vw')
+            $('#hamburger').css('color', 'black');
+
+
+        }
     }
 
     // User scrolls to 2nd page
@@ -117,6 +145,16 @@ $(document).on('scroll', function() {
         $('#bb-logo').css('left', '1.25vw')
         $('#sidebar').css('background-color', 'var(--red)');
         $('#sidebar').css('border-right', 'none');
+        $('#hamburger').css('color', 'white');
+
+
+        if (mql.matches){ // if media query is mobile sized
+            $('#sidebar').css('left', '0px')
+            $('#sidebar-text').css('top', '10px')
+            $('#sidebar-text').css('left', '30vw')
+            $('#sidebar-text').html('Who we are')
+            $('#bb-logo').css('left', '3vw')
+        }
     }
 
     // User scrolls to 3rd page
@@ -151,16 +189,17 @@ $(document).on('scroll', function() {
         return (yPos - (($('#p3').position().top) - 400)) * (1 - .1) / ((($('#p3').position().top) - 100) - (($('#p3').position().top) - 400)) + .1;
     }
 
-    // // User scrolls to 5th page
-    // if ($(this).scrollTop() >= ($('#p5').position().top) - 400) {
-    //     $('#sidebar-text').html('Process');
-    //     $('#sidebar-text').css('color', 'var(--activeProcessB');
-    //     $('.bb-1').css('fill', 'var(--activeProcessB');
-    //     $('.bb-2').css('fill', 'var(--activeProcessB');
-    //     $('#sidebar').css('background-color', 'var(--sidebar)');
-    //     $('#sidebar').css('border-right', '1px solid var(--activeProcessB');
-    // }
+    // User scrolls to 5th page
+    if ($(this).scrollTop() >= ($('#p4').position().top) + $('#p4').outerHeight(true) - 400) {
+        $('#sidebar-text').html('Process');
+        $('#sidebar-text').css('color', 'var(--activeProcessB');
+        $('.bb-1').css('fill', 'var(--activeProcessB');
+        $('.bb-2').css('fill', 'var(--activeProcessB');
+        $('#sidebar').css('background-color', 'var(--sidebar)');
+        $('#sidebar').css('border-right', '1px solid var(--activeProcessB');
+    }
 
+    //
     // // User scrolls to 6th page
     // if ($(this).scrollTop() >= ($('#p6').position().top) - 400) {
     //     $('#sidebar-text').html('Capabilities');
@@ -171,36 +210,41 @@ $(document).on('scroll', function() {
     //     $('#sidebar').css('border-right', '1px solid var(--activeProcessB');
     // }
 
+    // User scrolls to 7th page
+    if ($(this).scrollTop() >= ($('#p7').position().top) - 400) {
+        $('#sidebar-text').html('Contact Us');
+        $('#sidebar').css('background-color', 'var(--red)');
+        $('#sidebar').css('border-right', 'none');
+    }
+
 
 })
 
-
-//
-// for (var i=0; i<revealElements.length; i++) { // create a scene for each element
-//     new ScrollMagic.Scene({
-//         triggerElement: revealElements[i], // y value not modified, so we can use element as trigger as well
-//         offset: 50,												 // start a little later
-//         triggerHook: 0.9,
-//     })
-//         .setClassToggle(revealElements[i], "visible") // add class toggle
-//         .addTo(controller);
-// }
-
 function expand(row, col) {
 
+    // If screen is mobile
+    let desktop = window.matchMedia("screen and (min-width: 768px)")
+
+    // Find selected box
     let selectedBox = document.querySelector("#" + row + "> ." + col)
 
     document.getElementById('grid').scrollIntoView({behavior: 'smooth'});
 
-
     // If box is already selected, then close all boxes. If not, then open that box
     if (selectedBox.classList.contains('selected')) {
-
         // Reset all columns + brighten
         let allCols = document.querySelectorAll(".col");
         for (let i = 0; i < allCols.length; i++) {
-            allCols[i].style.flex = "1 1 0%";
+            // If desktop, reset flex
+            if (desktop.matches) {
+                allCols[i].style.flex = "1 1 0%";
+            // If mobile, reset height
+            } else {
+                allCols[i].style.height = "16.66vh";
+            }
+
             allCols[i].style.backgroundColor = null;
+            // allCols[i].querySelector('svg').style.transform = null;
             allCols[i].classList.remove("selected");
         }
 
@@ -209,16 +253,23 @@ function expand(row, col) {
         for (let i = 0; i < allRows.length; i++) {
             allRows[i].style.flex = 1;
         }
-
 
     } else {
 
         // Reset all columns + darken
         let allCols = document.querySelectorAll(".col");
         for (let i = 0; i < allCols.length; i++) {
-            allCols[i].style.flex = 1;
+            // If desktop, reset flex
+            if (desktop.matches) {
+                allCols[i].style.flex = "1 1 0%";
+                // If mobile, reset height
+            } else {
+                allCols[i].style.height = "16.66vh";
+            }
+
             allCols[i].style.backgroundColor = '#ababab';
             allCols[i].classList.remove("selected");
+            // allCols[i].querySelector('svg').style.transform = "scale(.5)";
         }
 
         // Reset all rows
@@ -227,17 +278,44 @@ function expand(row, col) {
             allRows[i].style.flex = 1;
         }
 
-        // Expand clicked row
-        document.getElementById(row).style.flex = '4';
+        // If desktop
+        if (desktop.matches) {
+            // Expand clicked row
+            document.getElementById(row).style.height = '5';
 
-        // Expand clicked column
-        let cols = document.querySelectorAll("." + col);
-        for (let i = 0; i < cols.length; i++) {
-            cols[i].style.flex = 4;
+            // Expand clicked column
+
+            if (col == 'col1and2' ) {
+                let cols = document.querySelectorAll(".col1, .col2, .col1and2")
+                for (let i = 0; i < cols.length; i++) {
+                    cols[i].style.flex = '2';
+                }
+            } else if (col == 'col3and4') {
+                let cols = document.querySelectorAll(".col3, .col4, .col3and4")
+                for (let i = 0; i < cols.length; i++) {
+                    cols[i].style.flex = '2';
+                }
+            } else {
+                let cols;
+                if (col == 'col1' || col == 'col2') {
+                    document.querySelectorAll(".col1and2")[0].style.flex = '2.5';
+                } else if (col == 'col3' || col == 'col4') {
+                    document.querySelectorAll(".col3and4")[0].style.flex = '2.5';
+                }
+                cols = document.querySelectorAll("." + col);
+                for (let i = 0; i < cols.length; i++) {
+                    cols[i].style.flex = '4';
+                }
+            }
+        } else {
+            selectedBox.style.height = '80vh';
         }
+
+
 
         // Brighten expanded box and add class tag
         selectedBox.style.backgroundColor = null;
+        // selectedBox.querySelector('svg').style.transform = null;
         selectedBox.classList.add("selected");
     }
 
@@ -255,8 +333,8 @@ function processStep(step) {
         }
 
         // Reset heights of rows
-        $('.process-row-2').css('height', '600px');
-        $('.process-row-3').css('height', '0');
+        $('.process-row-2').css('height', (80 / 3 * 2) + "vh");
+        $('.process-row-3').css('height', '0vh');
 
         // Reset sidebar color
         $('#sidebar').css('background-color', 'var(--red)');
@@ -283,18 +361,16 @@ function processStep(step) {
         document.querySelector("." + step).classList.add("button-selected")
 
         // Reduce height of other buttons
-        $('.process-row-2').css('height', '200px');
+        $('.process-row-2').css('height', (80 / 5) + "vh");
 
         // Expand height of text row
-        $('.process-row-3').css('height', '400px');
+        $('.process-row-3').css('height', (80 / 2.15) + "vh");
 
         // Make sidebar change color
         $('#sidebar').css('background-color', 'var(--activeProcess)');
 
-
         if (step == 'data') {
             $('.selected-tab-text').html("Starting with data, we use machine learning to recognize patterns, and provide insights that accelerate learning, build efficiencies, and inform the work.")
-
             document.documentElement.style.setProperty('--sidebar', '#3734D3');
             document.documentElement.style.setProperty('--activeProcess', '#3734D3');
             document.documentElement.style.setProperty('--activeProcessB', '#FFD3AA');
@@ -359,60 +435,6 @@ function capabilityStep(step) {
 
     }
 }
-//
-// $('#videoLogo').hover(
-//     function() {
-//
-//         reduceRadius3 = document.getElementById('reduceRadius-3');
-//         reduceRadius3.beginElementAt(.15);
-//
-//         expandRadius3 = document.getElementById('expandRadius-3');
-//         expandRadius3.beginElementAt(.3);
-//
-//         moveLeg1 = document.getElementById('moveLeg-1');
-//         moveLeg1.beginElement();
-//
-//         moveLeg2 = document.getElementById('moveLeg-2');
-//         moveLeg2.beginElement();
-//
-//         moveCircle1 = document.getElementById('moveCircle-1');
-//         moveCircle1.beginElement();
-//
-//         moveCircle2 = document.getElementById('moveCircle-2');
-//         moveCircle2.beginElement();
-//
-//         moveCircle3 = document.getElementById('moveCircle-3');
-//         moveCircle3.beginElement();
-//
-//
-//     }, function() {
-//         // returnRadius1 = document.getElementById('returnRadius-1');
-//         // returnRadius1.beginElementAt(.3);
-//         returnLeg1 = document.getElementById('returnLeg-1');
-//         returnLeg1.beginElementAt(.3);
-//
-//         returnLeg2 = document.getElementById('returnLeg-2');
-//         returnLeg2.beginElementAt(.3);
-//
-//         returnCircle1 = document.getElementById('returnCircle-1');
-//         returnCircle1.beginElementAt(.3);
-//
-//         returnCircle2 = document.getElementById('returnCircle-2');
-//         returnCircle2.beginElementAt(.3);
-//
-//         returnCircle2 = document.getElementById('returnCircle-3');
-//         returnCircle2.beginElementAt(.3);
-//
-//
-//         returnRadius3 = document.getElementById('returnRadius-3');
-//         returnRadius3.beginElement();
-//
-//         returnRadius32 = document.getElementById('returnRadius-3-2');
-//         returnRadius32.beginElementAt(.5);
-//     }
-// )
-
-
 
 var textWrapper = document.querySelector('.changing-text');
 textWrapper.innerHTML = textWrapper.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
@@ -512,38 +534,48 @@ anime.timeline({loop: true})
 ;
 
 
-var horizontalSlide = new TimelineMax()
-    // animate panels
-    .to("#slide-container", 1,   {x: "-50%"})
+// If on desktop,
+var min = window.matchMedia("screen and (min-width: 768px)")
+
+if (min.matches) {
+    var controller = new ScrollMagic.Controller();
+
+    var horizontalSlide = new TimelineMax()
+        // animate panels
+        .fromTo("#slide-container", 1, {x: "0%"},  {x: "-45%", immediateRender: false})
 
 
-var controller = new ScrollMagic.Controller();
+    // create scene to pin and link animation
+    new ScrollMagic.Scene({
+        triggerElement: "#p5-p6-wrapper",
+        triggerHook: "onLeave",
+        offset: 200,
+        duration: "200%"
+    })
+        .setPin("#p5-p6-wrapper")
+        .setTween(horizontalSlide)
+        //.addIndicators() // add indicators (requires plugin)
+        .addTo(controller);
 
-// Client tiles appear upon scrolling
-var staggerScene = new TimelineMax();
 
-staggerScene.staggerFromTo(".col2", 1, {y: 500}, {y: 0}, 0.3, 0);
-staggerScene.staggerFromTo(".col4", 1, {y: 500}, {y: 0}, 0.3, .2);
-staggerScene.staggerFromTo(".col3", 1, {y: 500}, {y: 0}, 0.5, .7);
-staggerScene.staggerFromTo(".col1", 1, {y: 500}, {y: 0}, 0.7, 1);
 
-new ScrollMagic.Scene({
-    triggerElement: "#p3",
-    offset: 0,
-    duration: "70%",
-    triggerHook: .8,
-})
-    .setTween(staggerScene)
-    .addTo(controller);
+    // Client tiles appear upon scrolling
+    var staggerScene = new TimelineMax();
 
-// create scene to pin and link animation
-new ScrollMagic.Scene({
-    triggerElement: "#p5-p6-wrapper",
-    triggerHook: "onLeave",
-    offset: 200,
-    duration: "200%"
-})
-    .setPin("#p5-p6-wrapper")
-    .setTween(horizontalSlide)
-    //.addIndicators() // add indicators (requires plugin)
-    .addTo(controller);
+    staggerScene.staggerFromTo(".col2", 1, {y: 500}, {y: 0}, 0.3, 0);
+    staggerScene.staggerFromTo(".col4", 1, {y: 500}, {y: 0}, 0.3, .2);
+    staggerScene.staggerFromTo(".col3", 1, {y: 500}, {y: 0}, 0.5, .7);
+    staggerScene.staggerFromTo(".col1", 1, {y: 500}, {y: 0}, 0.7, 1);
+
+
+    new ScrollMagic.Scene({
+        triggerElement: "#p3",
+        offset: 0,
+        duration: "70%",
+        triggerHook: .8,
+    })
+        .setTween(staggerScene)
+        .addTo(controller);
+
+}
+
